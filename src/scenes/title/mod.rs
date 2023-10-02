@@ -52,30 +52,89 @@ fn spawn_user_interface(mut commands: Commands, asset_server: Res<AssetServer>) 
                     height: Val::Percent(100.0),
                     width: Val::Percent(100.0),
                     flex_direction: FlexDirection::Column,
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
                     ..Default::default()
                 },
                 ..Default::default()
             },
         ))
         .with_children(|parent| {
-            parent.spawn((
-                Name::new("Title"),
-                TextBundle {
-                    text: Text {
-                        sections: vec![TextSection {
-                            style: TextStyle {
-                                font: asset_server.load("fonts/Noto_Sans/NotoSans-Regular.ttf"),
-                                font_size: 72.0,
-                                color: Color::BLACK,
-                            },
-                            value: "Bevy Bootstrap".into(),
-                        }],
+            parent
+                .spawn((
+                    Name::new("Title"),
+                    NodeBundle {
+                        style: Style {
+                            height: Val::Percent(100.0),
+                            width: Val::Percent(100.0),
+                            flex_direction: FlexDirection::Column,
+                            justify_content: JustifyContent::End,
+                            align_items: AlignItems::Center,
+                            ..Default::default()
+                        },
                         ..Default::default()
                     },
-                    ..Default::default()
-                },
-            ));
+                ))
+                .with_children(|parent| {
+                    parent.spawn((
+                        Name::new("Text"),
+                        TextBundle {
+                            text: Text {
+                                sections: vec![TextSection {
+                                    style: TextStyle {
+                                        font: asset_server
+                                            .load("fonts/Noto_Sans/NotoSans-Bold.ttf"),
+                                        font_size: 96.0,
+                                        color: Color::BLACK,
+                                    },
+                                    value: "Bevy Bootstrap".into(),
+                                }],
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        },
+                    ));
+                });
+
+            parent
+                .spawn((
+                    Name::new("Call to action"),
+                    NodeBundle {
+                        style: Style {
+                            height: Val::Percent(100.0),
+                            width: Val::Percent(100.0),
+                            flex_direction: FlexDirection::Column,
+                            justify_content: JustifyContent::End,
+                            align_items: AlignItems::Center,
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    },
+                ))
+                .with_children(|parent| {
+                    parent.spawn((
+                        Name::new("Text"),
+                        TextBundle {
+                            style: Style {
+                                margin: UiRect {
+                                    bottom: Val::Vh(5.0),
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            text: Text {
+                                sections: vec![TextSection {
+                                    style: TextStyle {
+                                        font: asset_server
+                                            .load("fonts/Noto_Sans/NotoSans-Regular.ttf"),
+                                        font_size: 36.0,
+                                        color: Color::BLACK,
+                                    },
+                                    value: "Press any button to start".into(),
+                                }],
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        },
+                    ));
+                });
         });
 }
