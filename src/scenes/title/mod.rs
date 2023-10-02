@@ -11,7 +11,7 @@ pub(crate) struct TitlePlugin;
 impl Plugin for TitlePlugin {
     fn build(&self, app: &mut App) {
         let state = super::ScenesState::Title;
-        let next_state = super::ScenesState::Title;
+        let next_state = super::ScenesState::MainMenu;
 
         app.add_systems(OnEnter(state), (spawn_camera, spawn_user_interface))
             .add_systems(
@@ -111,7 +111,7 @@ fn spawn_user_interface(mut commands: Commands, asset_server: Res<AssetServer>) 
         .with_children(|parent| {
             parent
                 .spawn((
-                    Name::new("Title"),
+                    Name::new("Logo"),
                     NodeBundle {
                         style: Style {
                             height: Val::Percent(100.0),
