@@ -1,0 +1,4 @@
+/target
+/wasm/*
+!/wasm/index.html
+!/wasm/restart_audio_context.js
