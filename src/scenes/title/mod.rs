@@ -1,4 +1,9 @@
-use bevy::prelude::*;
+use bevy::{
+    input::{keyboard::KeyboardInput, mouse::MouseButtonInput, touch::TouchPhase, ButtonState},
+    prelude::*,
+};
+
+use super::ScenesState;
 
 #[allow(clippy::module_name_repetitions)]
 pub(crate) struct TitlePlugin;
@@ -6,6 +11,7 @@ pub(crate) struct TitlePlugin;
 impl Plugin for TitlePlugin {
     fn build(&self, app: &mut App) {
         let state = super::ScenesState::Title;
+        let next_state = super::ScenesState::Title;
 
         app.add_systems(OnEnter(state), (spawn_camera, spawn_user_interface))
             .add_systems(
@@ -14,6 +20,15 @@ impl Plugin for TitlePlugin {
                     despawn_recursive::<Camera>,
                     despawn_recursive::<UserInterface>,
                 ),
+            )
+            .add_systems(
+                Update,
+                (
+                    on_key_released_go_to_state(next_state),
+                    on_mouse_released_go_to_state(next_state),
+                    on_touch_ended_go_to_state(next_state),
+                )
+                    .run_if(in_state(state)),
             );
 
         #[cfg(feature = "dev")]
@@ -34,6 +49,42 @@ struct UserInterface;
 fn despawn_recursive<T: Component>(mut commands: Commands, query: Query<Entity, With<T>>) {
     for entity in &query {
         commands.entity(entity).despawn_recursive();
+    }
+}
+
+fn on_key_released_go_to_state(
+    state: ScenesState,
+) -> impl Fn(ResMut<NextState<ScenesState>>, EventReader<KeyboardInput>) {
+    move |mut next_state, mut events| {
+        for event in &mut events {
+            if event.state == ButtonState::Released {
+                next_state.set(state);
+            }
+        }
+    }
+}
+
+fn on_mouse_released_go_to_state(
+    state: ScenesState,
+) -> impl Fn(ResMut<NextState<ScenesState>>, EventReader<MouseButtonInput>) {
+    move |mut next_state, mut events| {
+        for event in &mut events {
+            if event.state == ButtonState::Released {
+                next_state.set(state);
+            }
+        }
+    }
+}
+
+fn on_touch_ended_go_to_state(
+    state: ScenesState,
+) -> impl Fn(ResMut<NextState<ScenesState>>, EventReader<TouchInput>) {
+    move |mut next_state, mut events| {
+        for event in &mut events {
+            if event.phase == TouchPhase::Ended {
+                next_state.set(state);
+            }
+        }
     }
 }
 
