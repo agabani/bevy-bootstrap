@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["clippy", "egui", "vsync"],
+  "cSpell.words": ["clippy", "despawn", "egui", "vsync"],
   "files.associations": {
     "justfile": "makefile"
   },
