@@ -22,10 +22,10 @@ impl Plugin for MainMenuPlugin {
             .add_systems(
                 Update,
                 (
-                    on_pressed_go_to_state::<CreditsButton>(ScenesState::Credits),
+                    on_pressed_go_to_state::<CreditsButton>(ScenesState::MainMenu),
                     on_pressed_go_to_state::<NewGameButton>(ScenesState::MainMenu),
-                    on_pressed_go_to_state::<SettingsButton>(ScenesState::Settings),
-                    on_pressed_quit::<QuitButton>,
+                    on_pressed_go_to_state::<SettingsButton>(ScenesState::MainMenu),
+                    on_pressed_quit::<ExitGameButton>,
                 )
                     .run_if(in_state(state)),
             );
@@ -33,8 +33,8 @@ impl Plugin for MainMenuPlugin {
         #[cfg(feature = "dev")]
         app.register_type::<Camera>()
             .register_type::<CreditsButton>()
+            .register_type::<ExitGameButton>()
             .register_type::<NewGameButton>()
-            .register_type::<QuitButton>()
             .register_type::<SettingsButton>()
             .register_type::<UserInterface>();
     }
@@ -50,11 +50,11 @@ struct CreditsButton;
 
 #[derive(Component)]
 #[cfg_attr(feature = "dev", derive(Reflect))]
-struct NewGameButton;
+struct ExitGameButton;
 
 #[derive(Component)]
 #[cfg_attr(feature = "dev", derive(Reflect))]
-struct QuitButton;
+struct NewGameButton;
 
 #[derive(Component)]
 #[cfg_attr(feature = "dev", derive(Reflect))]
@@ -116,9 +116,10 @@ fn spawn_user_interface(mut commands: Commands, asset_server: Res<AssetServer>) 
                     NodeBundle {
                         style: Style {
                             height: Val::Percent(100.0),
-                            width: Val::Percent(100.0),
-                            flex_direction: FlexDirection::Row,
-                            justify_content: JustifyContent::End,
+                            min_width: Val::Px(320.0),
+                            max_width: Val::Px(640.0),
+                            width: Val::Percent(33.3),
+                            flex_direction: FlexDirection::Column,
                             ..Default::default()
                         },
                         background_color: Color::ORANGE.into(),
@@ -133,8 +134,8 @@ fn spawn_user_interface(mut commands: Commands, asset_server: Res<AssetServer>) 
                                 style: Style {
                                     height: Val::Percent(100.0),
                                     width: Val::Percent(100.0),
-                                    max_width: Val::Px(400.0),
                                     flex_direction: FlexDirection::Column,
+                                    row_gap: Val::Px(16.0),
                                     ..Default::default()
                                 },
                                 background_color: Color::YELLOW.into(),
@@ -142,186 +143,90 @@ fn spawn_user_interface(mut commands: Commands, asset_server: Res<AssetServer>) 
                             },
                         ))
                         .with_children(|parent| {
-                            parent
-                                .spawn((
-                                    Name::new("Logo"),
-                                    NodeBundle {
-                                        style: Style {
-                                            height: Val::Percent(100.0),
-                                            width: Val::Percent(100.0),
-                                            flex_direction: FlexDirection::Column,
-                                            justify_content: JustifyContent::End,
-                                            align_items: AlignItems::Center,
-                                            ..Default::default()
-                                        },
-                                        background_color: Color::GREEN.into(),
-                                        ..Default::default()
-                                    },
-                                ))
-                                .with_children(|parent| {
-                                    parent.spawn((
-                                        Name::new("Text"),
-                                        TextBundle {
-                                            text: Text {
-                                                sections: vec![TextSection {
-                                                    style: TextStyle {
-                                                        font: asset_server.load(
-                                                            "fonts/Noto_Sans/NotoSans-Bold.ttf",
-                                                        ),
-                                                        font_size: 48.0,
-                                                        color: Color::BLACK,
-                                                    },
-                                                    value: "Bevy Bootstrap".into(),
-                                                }],
-                                                ..Default::default()
-                                            },
-                                            ..Default::default()
-                                        },
-                                    ));
-                                });
+                            template_menu_button(
+                                parent,
+                                &asset_server,
+                                NewGameButton,
+                                "New Game",
+                                "NEW GAME",
+                            );
 
-                            parent
-                                .spawn((
-                                    Name::new("Buttons"),
-                                    NodeBundle {
-                                        style: Style {
-                                            height: Val::Percent(100.0),
-                                            width: Val::Percent(100.0),
-                                            flex_direction: FlexDirection::Column,
-                                            ..Default::default()
-                                        },
-                                        background_color: Color::BLUE.into(),
-                                        ..Default::default()
-                                    },
-                                ))
-                                .with_children(|parent| {
-                                    parent
-                                        .spawn((
-                                            Name::new("New Game"),
-                                            NewGameButton,
-                                            ButtonBundle {
-                                                ..Default::default()
-                                            },
-                                        ))
-                                        .with_children(|parent| {
-                                            parent.spawn(TextBundle {
-                                                text: Text {
-                                                    alignment: TextAlignment::Left,
-                                                    sections: vec![TextSection {
-                                                        style: TextStyle {
-                                                            color: Color::BLACK,
-                                                            font: asset_server.load(
-                                                                "fonts/Noto_Sans/NotoSans-Regular.ttf",
-                                                            ),
-                                                            font_size: 36.0,
-                                                        },
-                                                        value: "New Game".into(),
-                                                    }],
-                                                    ..Default::default()
-                                                },
-                                                ..Default::default()
-                                            });
-                                        });
+                            template_menu_button(
+                                parent,
+                                &asset_server,
+                                SettingsButton,
+                                "Settings",
+                                "SETTINGS",
+                            );
 
-                                    parent
-                                        .spawn((
-                                            Name::new("Settings"),
-                                            SettingsButton,
-                                            ButtonBundle {
-                                                ..Default::default()
-                                            },
-                                        ))
-                                        .with_children(|parent| {
-                                            parent.spawn(TextBundle {
-                                                text: Text {
-                                                    alignment: TextAlignment::Left,
-                                                    sections: vec![TextSection {
-                                                        style: TextStyle {
-                                                            color: Color::BLACK,
-                                                            font: asset_server.load(
-                                                                "fonts/Noto_Sans/NotoSans-Regular.ttf",
-                                                            ),
-                                                            font_size: 36.0,
-                                                        },
-                                                        value: "Settings".into(),
-                                                    }],
-                                                    ..Default::default()
-                                                },
-                                                ..Default::default()
-                                            });
-                                        });
+                            template_menu_button(
+                                parent,
+                                &asset_server,
+                                CreditsButton,
+                                "Credits",
+                                "CREDITS",
+                            );
 
-                                    parent
-                                        .spawn((
-                                            Name::new("Credits"),
-                                            CreditsButton,
-                                            ButtonBundle {
-                                                ..Default::default()
-                                            },
-                                        ))
-                                        .with_children(|parent| {
-                                            parent.spawn(TextBundle {
-                                                text: Text {
-                                                    alignment: TextAlignment::Left,
-                                                    sections: vec![TextSection {
-                                                        style: TextStyle {
-                                                            color: Color::BLACK,
-                                                            font: asset_server.load(
-                                                                "fonts/Noto_Sans/NotoSans-Regular.ttf",
-                                                            ),
-                                                            font_size: 36.0,
-                                                        },
-                                                        value: "Credits".into(),
-                                                    }],
-                                                    ..Default::default()
-                                                },
-                                                ..Default::default()
-                                            });
-                                        });
-
-                                    #[cfg(not(target_family = "wasm"))]
-                                    parent
-                                        .spawn((
-                                            Name::new("Quit"),
-                                            QuitButton,
-                                            ButtonBundle {
-                                                ..Default::default()
-                                            },
-                                        ))
-                                        .with_children(|parent| {
-                                            parent.spawn(TextBundle {
-                                                text: Text {
-                                                    alignment: TextAlignment::Left,
-                                                    sections: vec![TextSection {
-                                                        style: TextStyle {
-                                                            color: Color::BLACK,
-                                                            font: asset_server.load(
-                                                                "fonts/Noto_Sans/NotoSans-Regular.ttf",
-                                                            ),
-                                                            font_size: 36.0,
-                                                        },
-                                                        value: "Quit".into(),
-                                                    }],
-                                                    ..Default::default()
-                                                },
-                                                ..Default::default()
-                                            });
-                                        });
-                                });
+                            #[cfg(not(target_family = "wasm"))]
+                            template_menu_button(
+                                parent,
+                                &asset_server,
+                                ExitGameButton,
+                                "Exit Game",
+                                "EXIT GAME",
+                            );
                         });
                 });
+        });
+}
 
-            parent.spawn((
-                Name::new("Right"),
-                NodeBundle {
-                    style: Style {
-                        height: Val::Percent(100.0),
-                        width: Val::Percent(100.0),
-                        ..Default::default()
+fn template_menu_button<T: Component>(
+    parent: &mut ChildBuilder,
+    asset_server: &Res<AssetServer>,
+    component: T,
+    name: impl Into<String>,
+    text: impl Into<String>,
+) {
+    parent
+        .spawn((
+            Name::new(name.into()),
+            component,
+            ButtonBundle {
+                background_color: Color::rgb(0.078, 0.145, 0.173).into(),
+                border_color: Color::rgb(0.6, 0.525, 0.298).into(),
+                style: Style {
+                    border: UiRect {
+                        bottom: Val::Px(2.0),
+                        left: Val::Px(2.0),
+                        right: Val::Px(2.0),
+                        top: Val::Px(2.0),
                     },
-                    background_color: Color::PURPLE.into(),
+                    padding: UiRect {
+                        bottom: Val::Px(8.0),
+                        left: Val::Px(24.0),
+                        right: Val::Px(24.0),
+                        top: Val::Px(8.0),
+                    },
                     ..Default::default()
                 },
-            ));
+                ..Default::default()
+            },
+        ))
+        .with_children(|parent| {
+            parent.spawn(TextBundle {
+                text: Text {
+                    alignment: TextAlignment::Left,
+                    sections: vec![TextSection {
+                        style: TextStyle {
+                            color: Color::WHITE,
+                            font: asset_server.load("fonts/Noto_Sans/NotoSans-Regular.ttf"),
+                            font_size: 36.0,
+                        },
+                        value: text.into(),
+                    }],
+                    ..Default::default()
+                },
+                ..Default::default()
+            });
         });
 }
