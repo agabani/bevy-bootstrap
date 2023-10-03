@@ -10,6 +10,10 @@ build-wasm:
   @cargo build --release --target wasm32-unknown-unknown
   @wasm-bindgen --out-dir wasm --out-name bevy_bootstrap --target web target/wasm32-unknown-unknown/release/bevy-bootstrap.wasm
 
+# format
+format:
+  @cargo fmt
+
 # install
 install: install-wasm-bindgen install-wasm-server install-wasm-target
 
