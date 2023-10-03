@@ -5,6 +5,7 @@ pub(crate) mod bevy_config;
 pub(crate) mod dev;
 pub(crate) mod prelude;
 pub(crate) mod scenes;
+pub(crate) mod systems;
 
 use bevy::prelude::*;
 

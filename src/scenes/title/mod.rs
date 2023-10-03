@@ -3,6 +3,8 @@ use bevy::{
     prelude::*,
 };
 
+use crate::prelude::*;
+
 use super::ScenesState;
 
 #[allow(clippy::module_name_repetitions)]
@@ -17,8 +19,8 @@ impl Plugin for TitlePlugin {
             .add_systems(
                 OnExit(state),
                 (
-                    despawn_recursive::<Camera>,
-                    despawn_recursive::<UserInterface>,
+                    systems::despawn_recursive::<Camera>,
+                    systems::despawn_recursive::<UserInterface>,
                 ),
             )
             .add_systems(
@@ -44,13 +46,6 @@ struct Camera;
 #[derive(Component)]
 #[cfg_attr(feature = "dev", derive(Reflect))]
 struct UserInterface;
-
-#[allow(clippy::needless_pass_by_value)]
-fn despawn_recursive<T: Component>(mut commands: Commands, query: Query<Entity, With<T>>) {
-    for entity in &query {
-        commands.entity(entity).despawn_recursive();
-    }
-}
 
 fn on_key_released_go_to_state(
     state: ScenesState,
