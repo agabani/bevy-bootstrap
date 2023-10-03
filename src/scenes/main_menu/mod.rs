@@ -1,4 +1,6 @@
-use bevy::prelude::*;
+use bevy::{app::AppExit, prelude::*};
+
+use super::ScenesState;
 
 #[allow(clippy::module_name_repetitions)]
 pub(crate) struct MainMenuPlugin;
@@ -14,10 +16,24 @@ impl Plugin for MainMenuPlugin {
                     despawn_recursive::<Camera>,
                     despawn_recursive::<UserInterface>,
                 ),
+            )
+            .add_systems(
+                Update,
+                (
+                    on_pressed_go_to_state::<CreditsButton>(ScenesState::MainMenu),
+                    on_pressed_go_to_state::<NewGameButton>(ScenesState::MainMenu),
+                    on_pressed_go_to_state::<SettingsButton>(ScenesState::MainMenu),
+                    on_pressed_quit::<QuitButton>,
+                )
+                    .run_if(in_state(state)),
             );
 
         #[cfg(feature = "dev")]
         app.register_type::<Camera>()
+            .register_type::<CreditsButton>()
+            .register_type::<NewGameButton>()
+            .register_type::<QuitButton>()
+            .register_type::<SettingsButton>()
             .register_type::<UserInterface>();
     }
 }
@@ -28,12 +44,52 @@ struct Camera;
 
 #[derive(Component)]
 #[cfg_attr(feature = "dev", derive(Reflect))]
+struct CreditsButton;
+
+#[derive(Component)]
+#[cfg_attr(feature = "dev", derive(Reflect))]
+struct NewGameButton;
+
+#[derive(Component)]
+#[cfg_attr(feature = "dev", derive(Reflect))]
+struct QuitButton;
+
+#[derive(Component)]
+#[cfg_attr(feature = "dev", derive(Reflect))]
+struct SettingsButton;
+
+#[derive(Component)]
+#[cfg_attr(feature = "dev", derive(Reflect))]
 struct UserInterface;
 
 #[allow(clippy::needless_pass_by_value)]
 fn despawn_recursive<T: Component>(mut commands: Commands, query: Query<Entity, With<T>>) {
     for entity in &query {
         commands.entity(entity).despawn_recursive();
+    }
+}
+
+fn on_pressed_go_to_state<T: Component>(
+    state: ScenesState,
+) -> impl Fn(ResMut<NextState<ScenesState>>, Query<&Interaction, (Changed<Interaction>, With<T>)>) {
+    move |mut next_state, query| {
+        for &interaction in &query {
+            if interaction == Interaction::Pressed {
+                next_state.set(state);
+            }
+        }
+    }
+}
+
+#[allow(clippy::needless_pass_by_value)]
+fn on_pressed_quit<T: Component>(
+    mut events: EventWriter<AppExit>,
+    query: Query<&Interaction, (Changed<Interaction>, With<T>)>,
+) {
+    for &interaction in &query {
+        if interaction == Interaction::Pressed {
+            events.send(AppExit);
+        }
     }
 }
 
@@ -147,6 +203,7 @@ fn spawn_user_interface(mut commands: Commands, asset_server: Res<AssetServer>) 
                                     parent
                                         .spawn((
                                             Name::new("New Game"),
+                                            NewGameButton,
                                             ButtonBundle {
                                                 ..Default::default()
                                             },
@@ -174,6 +231,7 @@ fn spawn_user_interface(mut commands: Commands, asset_server: Res<AssetServer>) 
                                     parent
                                         .spawn((
                                             Name::new("Settings"),
+                                            SettingsButton,
                                             ButtonBundle {
                                                 ..Default::default()
                                             },
@@ -201,6 +259,7 @@ fn spawn_user_interface(mut commands: Commands, asset_server: Res<AssetServer>) 
                                     parent
                                         .spawn((
                                             Name::new("Credits"),
+                                            CreditsButton,
                                             ButtonBundle {
                                                 ..Default::default()
                                             },
@@ -229,6 +288,7 @@ fn spawn_user_interface(mut commands: Commands, asset_server: Res<AssetServer>) 
                                     parent
                                         .spawn((
                                             Name::new("Quit"),
+                                            QuitButton,
                                             ButtonBundle {
                                                 ..Default::default()
                                             },
