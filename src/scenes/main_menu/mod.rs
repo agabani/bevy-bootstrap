@@ -20,9 +20,9 @@ impl Plugin for MainMenuPlugin {
             .add_systems(
                 Update,
                 (
-                    on_pressed_go_to_state::<CreditsButton>(ScenesState::MainMenu),
+                    on_pressed_go_to_state::<CreditsButton>(ScenesState::Credits),
                     on_pressed_go_to_state::<NewGameButton>(ScenesState::MainMenu),
-                    on_pressed_go_to_state::<SettingsButton>(ScenesState::MainMenu),
+                    on_pressed_go_to_state::<SettingsButton>(ScenesState::Settings),
                     on_pressed_quit::<QuitButton>,
                 )
                     .run_if(in_state(state)),
