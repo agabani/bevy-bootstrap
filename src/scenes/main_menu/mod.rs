@@ -25,6 +25,7 @@ impl Plugin for MainMenuPlugin {
                 (
                     systems::on_pressed_exit_app::<main::ExitGameButton>,
                     on_pressed_swap_screens::<main::SettingsButton, setting::Screen>(),
+                    on_pressed_swap_screens::<setting::BackButton, main::Screen>(),
                 )
                     .run_if(in_state(state)),
             );
@@ -38,6 +39,7 @@ impl Plugin for MainMenuPlugin {
             .register_type::<main::NewGameButton>()
             .register_type::<main::Screen>()
             .register_type::<main::SettingsButton>()
+            .register_type::<setting::BackButton>()
             .register_type::<setting::Screen>();
     }
 }
