@@ -39,8 +39,18 @@ impl Plugin for MainMenuPlugin {
             .register_type::<main::NewGameButton>()
             .register_type::<main::Screen>()
             .register_type::<main::SettingsButton>()
+            .register_type::<setting::Screen>()
+            .register_type::<setting::AccessibilityOptionsButton>()
+            .register_type::<setting::AudioOptionsButton>()
             .register_type::<setting::BackButton>()
-            .register_type::<setting::Screen>();
+            .register_type::<setting::ControlOptionsButton>()
+            .register_type::<setting::DisplayOptionsButton>()
+            .register_type::<setting::GameplayOptionsButton>()
+            .register_type::<setting::GraphicsOptionsButton>()
+            .register_type::<setting::PCControlOptionsButton>()
+            .register_type::<setting::ResetToDefaultsButton>()
+            .register_type::<setting::SelectButton>()
+            .register_type::<setting::UserInterfaceOptionsButton>();
     }
 }
 
