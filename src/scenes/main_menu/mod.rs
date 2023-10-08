@@ -26,6 +26,17 @@ impl Plugin for MainMenuPlugin {
                     systems::on_pressed_exit_app::<main::ExitGameButton>,
                     on_pressed_swap_screens::<main::SettingsButton, setting::Screen>(),
                     on_pressed_swap_screens::<setting::BackButton, main::Screen>(),
+                    (
+                        systems::on_pressed_despawn_descendants::<
+                            setting::GraphicsOptionsButton,
+                            setting::Title,
+                        >,
+                        setting::spawn_title_graphics_options::<
+                            setting::GraphicsOptionsButton,
+                            setting::Title,
+                        >,
+                    )
+                        .chain(),
                 )
                     .run_if(in_state(state)),
             );
@@ -50,7 +61,8 @@ impl Plugin for MainMenuPlugin {
             .register_type::<setting::PCControlOptionsButton>()
             .register_type::<setting::ResetToDefaultsButton>()
             .register_type::<setting::SelectButton>()
-            .register_type::<setting::UserInterfaceOptionsButton>();
+            .register_type::<setting::UserInterfaceOptionsButton>()
+            .register_type::<setting::Title>();
     }
 }
 

@@ -25,6 +25,20 @@ pub(crate) fn on_pressed_change_visibility<I: Component, V: Component>(
     }
 }
 
+pub(crate) fn on_pressed_despawn_descendants<I: Component, E: Component>(
+    mut commands: Commands,
+    interactions: Query<&Interaction, (Changed<Interaction>, With<I>)>,
+    entities: Query<Entity, With<E>>,
+) {
+    for &interaction in &interactions {
+        if interaction == Interaction::Pressed {
+            for entity in &entities {
+                commands.entity(entity).despawn_descendants();
+            }
+        }
+    }
+}
+
 #[allow(clippy::needless_pass_by_value)]
 pub(crate) fn on_pressed_exit_app<I: Component>(
     mut events: EventWriter<AppExit>,

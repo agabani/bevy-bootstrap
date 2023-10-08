@@ -48,6 +48,10 @@ pub(super) struct SelectButton;
 #[cfg_attr(feature = "dev", derive(Reflect))]
 pub(super) struct UserInterfaceOptionsButton;
 
+#[derive(Component)]
+#[cfg_attr(feature = "dev", derive(Reflect))]
+pub(super) struct Title;
+
 pub(super) fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
     parent
         .spawn((
@@ -179,20 +183,42 @@ pub(super) fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer
                             },
                         ))
                         .with_children(|parent| {
-                            parent.spawn((
-                                Name::new("Title"),
-                                NodeBundle {
-                                    style: Style {
-                                        height: Val::Percent(100.0),
-                                        width: Val::Percent(100.0),
-                                        max_height: Val::Px(240.0),
-                                        flex_direction: FlexDirection::Row,
+                            parent
+                                .spawn((
+                                    Name::new("Title"),
+                                    Title,
+                                    NodeBundle {
+                                        style: Style {
+                                            height: Val::Percent(100.0),
+                                            width: Val::Percent(100.0),
+                                            max_height: Val::Px(240.0),
+                                            flex_direction: FlexDirection::Row,
+                                            align_items: AlignItems::End,
+                                            ..Default::default()
+                                        },
+                                        background_color: Color::GREEN.into(),
                                         ..Default::default()
                                     },
-                                    background_color: Color::GREEN.into(),
-                                    ..Default::default()
-                                },
-                            ));
+                                ))
+                                .with_children(|parent| {
+                                    parent.spawn(TextBundle {
+                                        text: Text {
+                                            alignment: TextAlignment::Left,
+                                            sections: vec![TextSection {
+                                                style: TextStyle {
+                                                    color: Color::WHITE,
+                                                    font: asset_server.load(
+                                                        "fonts/Noto_Sans/NotoSans-Regular.ttf",
+                                                    ),
+                                                    font_size: 36.0,
+                                                },
+                                                value: "DISPLAY OPTIONS".into(),
+                                            }],
+                                            ..Default::default()
+                                        },
+                                        ..Default::default()
+                                    });
+                                });
 
                             parent.spawn((
                                 Name::new("Content"),
@@ -306,6 +332,7 @@ fn template_sidebar_button<T: Component>(
                 background_color: Color::rgb(0.078, 0.145, 0.173).into(),
                 border_color: Color::rgb(0.6, 0.525, 0.298).into(),
                 style: Style {
+                    justify_content: JustifyContent::End,
                     border: UiRect {
                         bottom: Val::Px(2.0),
                         left: Val::Px(2.0),
@@ -331,7 +358,7 @@ fn template_sidebar_button<T: Component>(
                         style: TextStyle {
                             color: Color::WHITE,
                             font: asset_server.load("fonts/Noto_Sans/NotoSans-Regular.ttf"),
-                            font_size: 36.0,
+                            font_size: 24.0,
                         },
                         value: text.into(),
                     }],
@@ -340,4 +367,35 @@ fn template_sidebar_button<T: Component>(
                 ..Default::default()
             });
         });
+}
+
+pub(super) fn spawn_title_graphics_options<I: Component, E: Component>(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    interactions: Query<&Interaction, (Changed<Interaction>, With<I>)>,
+    entities: Query<Entity, With<E>>,
+) {
+    for &interaction in &interactions {
+        if interaction == Interaction::Pressed {
+            for entity in &entities {
+                commands.entity(entity).with_children(|parent| {
+                    parent.spawn(TextBundle {
+                        text: Text {
+                            alignment: TextAlignment::Left,
+                            sections: vec![TextSection {
+                                style: TextStyle {
+                                    color: Color::WHITE,
+                                    font: asset_server.load("fonts/Noto_Sans/NotoSans-Regular.ttf"),
+                                    font_size: 36.0,
+                                },
+                                value: "GRAPHICS OPTIONS".into(),
+                            }],
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    });
+                });
+            }
+        }
+    }
 }
