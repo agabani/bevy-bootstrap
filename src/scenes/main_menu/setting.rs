@@ -114,69 +114,15 @@ pub(super) fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer
                             },
                         ))
                         .with_children(|parent| {
-                            template_sidebar_button(
-                                parent,
-                                asset_server,
-                                DisplayOptionsButton,
-                                "Display Options",
-                                "DISPLAY OPTIONS",
-                            );
-
-                            template_sidebar_button(
-                                parent,
-                                asset_server,
-                                GraphicsOptionsButton,
-                                "Graphics Options",
-                                "GRAPHICS OPTIONS",
-                            );
-
-                            template_sidebar_button(
-                                parent,
-                                asset_server,
-                                AudioOptionsButton,
-                                "Audio Options",
-                                "AUDIO OPTIONS",
-                            );
-
-                            template_sidebar_button(
-                                parent,
-                                asset_server,
-                                GameplayOptionsButton,
-                                "Gameplay Options",
-                                "GAMEPLAY OPTIONS",
-                            );
-
-                            template_sidebar_button(
-                                parent,
-                                asset_server,
-                                ControlOptionsButton,
-                                "Control Options",
-                                "CONTROL OPTIONS",
-                            );
-
-                            template_sidebar_button(
-                                parent,
-                                asset_server,
-                                PCControlOptionsButton,
-                                "PC Control Options",
-                                "PC CONTROL OPTIONS",
-                            );
-
-                            template_sidebar_button(
-                                parent,
-                                asset_server,
-                                AccessibilityOptionsButton,
-                                "Accessibility Options",
-                                "ACCESSIBILITY OPTIONS",
-                            );
-
-                            template_sidebar_button(
-                                parent,
-                                asset_server,
-                                UserInterfaceOptionsButton,
-                                "User Interface Options",
-                                "USER INTERFACE OPTIONS",
-                            );
+                            use systems::Blueprint;
+                            DisplayOptionsButtonBlueprint::template(parent, asset_server);
+                            GraphicsOptionsButtonBlueprint::template(parent, asset_server);
+                            AudioOptionsButtonBlueprint::template(parent, asset_server);
+                            GameplayOptionsButtonBlueprint::template(parent, asset_server);
+                            ControlOptionsButtonBlueprint::template(parent, asset_server);
+                            PCControlOptionsButtonBlueprint::template(parent, asset_server);
+                            AccessibilityOptionsButtonBlueprint::template(parent, asset_server);
+                            UserInterfaceOptionsButtonBlueprint::template(parent, asset_server);
                         });
 
                     parent
@@ -313,7 +259,119 @@ fn template_footer_button<T: Component>(
         });
 }
 
-fn template_sidebar_button<T: Component>(
+pub(super) struct DisplayOptionsButtonBlueprint;
+
+impl systems::Blueprint for DisplayOptionsButtonBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        sidebar_button_blueprint_template(
+            parent,
+            asset_server,
+            DisplayOptionsButton,
+            "Display Options",
+            "DISPLAY OPTIONS",
+        );
+    }
+}
+
+pub(super) struct GraphicsOptionsButtonBlueprint;
+
+impl systems::Blueprint for GraphicsOptionsButtonBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        sidebar_button_blueprint_template(
+            parent,
+            asset_server,
+            GraphicsOptionsButton,
+            "Graphics Options",
+            "GRAPHICS OPTIONS",
+        );
+    }
+}
+
+pub(super) struct AudioOptionsButtonBlueprint;
+
+impl systems::Blueprint for AudioOptionsButtonBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        sidebar_button_blueprint_template(
+            parent,
+            asset_server,
+            AudioOptionsButton,
+            "Audio Options",
+            "AUDIO OPTIONS",
+        );
+    }
+}
+
+pub(super) struct GameplayOptionsButtonBlueprint;
+
+impl systems::Blueprint for GameplayOptionsButtonBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        sidebar_button_blueprint_template(
+            parent,
+            asset_server,
+            GameplayOptionsButton,
+            "Gameplay Options",
+            "GAMEPLAY OPTIONS",
+        );
+    }
+}
+
+pub(super) struct ControlOptionsButtonBlueprint;
+
+impl systems::Blueprint for ControlOptionsButtonBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        sidebar_button_blueprint_template(
+            parent,
+            asset_server,
+            ControlOptionsButton,
+            "Control Options",
+            "CONTROL OPTIONS",
+        );
+    }
+}
+
+pub(super) struct PCControlOptionsButtonBlueprint;
+
+impl systems::Blueprint for PCControlOptionsButtonBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        sidebar_button_blueprint_template(
+            parent,
+            asset_server,
+            PCControlOptionsButton,
+            "PC Control Options",
+            "PC CONTROL OPTIONS",
+        );
+    }
+}
+
+pub(super) struct AccessibilityOptionsButtonBlueprint;
+
+impl systems::Blueprint for AccessibilityOptionsButtonBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        sidebar_button_blueprint_template(
+            parent,
+            asset_server,
+            AccessibilityOptionsButton,
+            "Accessibility Options",
+            "ACCESSIBILITY OPTIONS",
+        );
+    }
+}
+
+pub(super) struct UserInterfaceOptionsButtonBlueprint;
+
+impl systems::Blueprint for UserInterfaceOptionsButtonBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        sidebar_button_blueprint_template(
+            parent,
+            asset_server,
+            UserInterfaceOptionsButton,
+            "User Interface Options",
+            "USER INTERFACE OPTIONS",
+        );
+    }
+}
+
+fn sidebar_button_blueprint_template<T: Component>(
     parent: &mut ChildBuilder,
     asset_server: &Res<AssetServer>,
     component: T,
