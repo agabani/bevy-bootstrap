@@ -1,4 +1,6 @@
-use bevy::prelude::*;
+use bevy::{ecs::schedule::SystemConfigs, prelude::*};
+
+use crate::systems;
 
 #[derive(Component)]
 #[cfg_attr(feature = "dev", derive(Reflect))]
@@ -51,6 +53,15 @@ pub(super) struct UserInterfaceOptionsButton;
 #[derive(Component)]
 #[cfg_attr(feature = "dev", derive(Reflect))]
 pub(super) struct Title;
+
+pub(super) fn on_pressed_swap_panels<I: Component, B: systems::Blueprint + 'static>(
+) -> SystemConfigs {
+    (
+        systems::on_pressed_despawn_descendants::<I, Title>,
+        systems::on_pressed_spawn_descendant::<I, Title, B>,
+    )
+        .chain()
+}
 
 pub(super) fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
     parent
@@ -201,23 +212,8 @@ pub(super) fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer
                                     },
                                 ))
                                 .with_children(|parent| {
-                                    parent.spawn(TextBundle {
-                                        text: Text {
-                                            alignment: TextAlignment::Left,
-                                            sections: vec![TextSection {
-                                                style: TextStyle {
-                                                    color: Color::WHITE,
-                                                    font: asset_server.load(
-                                                        "fonts/Noto_Sans/NotoSans-Regular.ttf",
-                                                    ),
-                                                    font_size: 36.0,
-                                                },
-                                                value: "DISPLAY OPTIONS".into(),
-                                            }],
-                                            ..Default::default()
-                                        },
-                                        ..Default::default()
-                                    });
+                                    use systems::Blueprint;
+                                    DisplayOptionsTitleBlueprint::template(parent, asset_server);
                                 });
 
                             parent.spawn((
@@ -369,33 +365,88 @@ fn template_sidebar_button<T: Component>(
         });
 }
 
-pub(super) fn spawn_title_graphics_options<I: Component, E: Component>(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    interactions: Query<&Interaction, (Changed<Interaction>, With<I>)>,
-    entities: Query<Entity, With<E>>,
-) {
-    for &interaction in &interactions {
-        if interaction == Interaction::Pressed {
-            for entity in &entities {
-                commands.entity(entity).with_children(|parent| {
-                    parent.spawn(TextBundle {
-                        text: Text {
-                            alignment: TextAlignment::Left,
-                            sections: vec![TextSection {
-                                style: TextStyle {
-                                    color: Color::WHITE,
-                                    font: asset_server.load("fonts/Noto_Sans/NotoSans-Regular.ttf"),
-                                    font_size: 36.0,
-                                },
-                                value: "GRAPHICS OPTIONS".into(),
-                            }],
-                            ..Default::default()
-                        },
-                        ..Default::default()
-                    });
-                });
-            }
-        }
+pub(super) struct DisplayOptionsTitleBlueprint;
+
+impl systems::Blueprint for DisplayOptionsTitleBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        title_blueprint_template(parent, asset_server, "DISPLAY OPTIONS");
     }
+}
+
+pub(super) struct GraphicsOptionsTitleBlueprint;
+
+impl systems::Blueprint for GraphicsOptionsTitleBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        title_blueprint_template(parent, asset_server, "GRAPHICS OPTIONS");
+    }
+}
+
+pub(super) struct AudioOptionsTitleBlueprint;
+
+impl systems::Blueprint for AudioOptionsTitleBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        title_blueprint_template(parent, asset_server, "AUDIO OPTIONS");
+    }
+}
+
+pub(super) struct GameplayOptionsTitleBlueprint;
+
+impl systems::Blueprint for GameplayOptionsTitleBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        title_blueprint_template(parent, asset_server, "GAMEPLAY OPTIONS");
+    }
+}
+
+pub(super) struct ControlOptionsTitleBlueprint;
+
+impl systems::Blueprint for ControlOptionsTitleBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        title_blueprint_template(parent, asset_server, "CONTROL OPTIONS");
+    }
+}
+
+pub(super) struct PCControlOptionsTitleBlueprint;
+
+impl systems::Blueprint for PCControlOptionsTitleBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        title_blueprint_template(parent, asset_server, "PC CONTROL OPTIONS");
+    }
+}
+
+pub(super) struct AccessibilityOptionsTitleBlueprint;
+
+impl systems::Blueprint for AccessibilityOptionsTitleBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        title_blueprint_template(parent, asset_server, "ACCESSIBILITY OPTIONS");
+    }
+}
+
+pub(super) struct UserInterfaceOptionsTitleBlueprint;
+
+impl systems::Blueprint for UserInterfaceOptionsTitleBlueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>) {
+        title_blueprint_template(parent, asset_server, "USER INTERFACE OPTIONS");
+    }
+}
+
+fn title_blueprint_template(
+    parent: &mut ChildBuilder,
+    asset_server: &Res<AssetServer>,
+    text: impl Into<String>,
+) {
+    parent.spawn(TextBundle {
+        text: Text {
+            alignment: TextAlignment::Left,
+            sections: vec![TextSection {
+                style: TextStyle {
+                    color: Color::WHITE,
+                    font: asset_server.load("fonts/Noto_Sans/NotoSans-Regular.ttf"),
+                    font_size: 36.0,
+                },
+                value: text.into(),
+            }],
+            ..Default::default()
+        },
+        ..Default::default()
+    });
 }

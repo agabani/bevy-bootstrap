@@ -50,3 +50,28 @@ pub(crate) fn on_pressed_exit_app<I: Component>(
         }
     }
 }
+
+pub(crate) trait Blueprint {
+    fn template(parent: &mut ChildBuilder, asset_server: &Res<AssetServer>);
+}
+
+pub(crate) fn on_pressed_spawn_descendant<I, P, B>(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    interactions: Query<&Interaction, (Changed<Interaction>, With<I>)>,
+    parents: Query<Entity, With<P>>,
+) where
+    I: Component,
+    P: Component,
+    B: Blueprint,
+{
+    for &interaction in &interactions {
+        if interaction == Interaction::Pressed {
+            for parent in &parents {
+                commands.entity(parent).with_children(|parent| {
+                    B::template(parent, &asset_server);
+                });
+            }
+        }
+    }
+}

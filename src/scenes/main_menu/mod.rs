@@ -26,17 +26,38 @@ impl Plugin for MainMenuPlugin {
                     systems::on_pressed_exit_app::<main::ExitGameButton>,
                     on_pressed_swap_screens::<main::SettingsButton, setting::Screen>(),
                     on_pressed_swap_screens::<setting::BackButton, main::Screen>(),
-                    (
-                        systems::on_pressed_despawn_descendants::<
-                            setting::GraphicsOptionsButton,
-                            setting::Title,
-                        >,
-                        setting::spawn_title_graphics_options::<
-                            setting::GraphicsOptionsButton,
-                            setting::Title,
-                        >,
-                    )
-                        .chain(),
+                    setting::on_pressed_swap_panels::<
+                        setting::DisplayOptionsButton,
+                        setting::DisplayOptionsTitleBlueprint,
+                    >(),
+                    setting::on_pressed_swap_panels::<
+                        setting::GraphicsOptionsButton,
+                        setting::GraphicsOptionsTitleBlueprint,
+                    >(),
+                    setting::on_pressed_swap_panels::<
+                        setting::AudioOptionsButton,
+                        setting::AudioOptionsTitleBlueprint,
+                    >(),
+                    setting::on_pressed_swap_panels::<
+                        setting::GameplayOptionsButton,
+                        setting::GameplayOptionsTitleBlueprint,
+                    >(),
+                    setting::on_pressed_swap_panels::<
+                        setting::ControlOptionsButton,
+                        setting::ControlOptionsTitleBlueprint,
+                    >(),
+                    setting::on_pressed_swap_panels::<
+                        setting::PCControlOptionsButton,
+                        setting::PCControlOptionsTitleBlueprint,
+                    >(),
+                    setting::on_pressed_swap_panels::<
+                        setting::AccessibilityOptionsButton,
+                        setting::AccessibilityOptionsTitleBlueprint,
+                    >(),
+                    setting::on_pressed_swap_panels::<
+                        setting::UserInterfaceOptionsButton,
+                        setting::UserInterfaceOptionsTitleBlueprint,
+                    >(),
                 )
                     .run_if(in_state(state)),
             );
